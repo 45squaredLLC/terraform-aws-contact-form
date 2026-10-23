@@ -1,0 +1,25 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false
+      - run: terraform test
+      - run: python -m unittest discover -s tests -v

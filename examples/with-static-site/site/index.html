@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact us</title>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 32rem; margin: 3rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: 1rem; }
+    input, textarea { width: 100%; padding: .5rem; font: inherit; box-sizing: border-box; }
+    .hp { position: absolute; left: -10000px; }
+    button { margin-top: 1rem; padding: .6rem 1.2rem; font: inherit; }
+  </style>
+</head>
+<body>
+  <h1>Contact us</h1>
+
+  <!-- Replace the action with the module's "endpoint" output, and data-sitekey
+       with your Turnstile site key. -->
+  <form id="contact" method="post" action="https://REPLACE.execute-api.us-east-1.amazonaws.com/contact">
+    <label>Name <input name="name" autocomplete="name"></label>
+    <label>Email <input name="email" type="email" autocomplete="email" required></label>
+    <label>Message <textarea name="message" rows="5" required></textarea></label>
+
+    <!-- Honeypot: hidden from people, filled in by bots. -->
+    <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+
+    <div class="cf-turnstile" data-sitekey="REPLACE_WITH_SITE_KEY"></div>
+    <button type="submit">Send</button>
+    <p id="status" role="status"></p>
+  </form>
+
+  <script>
+    // Post with fetch and show the result on the page. Without JavaScript the
+    // form still posts normally (set redirect_url in the module for that case).
+    const form = document.getElementById("contact");
+    const status = document.getElementById("status");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "Sending…";
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        const data = await res.json();
+        status.textContent = data.ok ? "Thanks! We'll get back to you soon." : data.message;
+        if (data.ok) form.reset();
+      } catch {
+        status.textContent = "Something went wrong. Please try again or call us.";
+      }
+      if (window.turnstile) turnstile.reset();
+    });
+  </script>
+</body>
+</html>
