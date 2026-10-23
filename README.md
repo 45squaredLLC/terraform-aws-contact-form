@@ -67,6 +67,7 @@ The endpoint accepts JSON (`fetch`) or a normal form post. It reads `name`, `ema
       ```
    3. Pass `turnstile_secret_parameter = "/contact-form/turnstile-secret"`.
    4. Add the widget to your form with the **site key**. The widget adds a `cf-turnstile-response` field; with Turnstile on, any submission without a valid token is refused.
+3. **CI that applies a saved plan in a separate job.** The Lambda zip is built by `archive_file` during plan, at `.terraform/modules/<module name>/.build/<name>.zip`. A fresh apply job won't have it, so carry that file over with the plan, e.g. in the same artifact as `plan.out`. With `actions/upload-artifact`, set `include-hidden-files: true`. Without it the apply fails with "reading ZIP file … no such file or directory".
 
 ## Inputs
 
