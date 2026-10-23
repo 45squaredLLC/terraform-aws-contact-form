@@ -57,6 +57,7 @@ The endpoint accepts JSON (`fetch`) or a normal form post. It reads `name`, `ema
 1. **SES.** Verify the sender's domain (or address) in SES, in the same account and region as the module.
    - A new AWS account starts in the SES sandbox, where mail only goes to verified addresses.
    - Request production access if the recipients aren't verified.
+   - Accounts with a default SES configuration set work too: the Lambda's role may send through configuration sets as well as the sender identity.
 2. **Turnstile (recommended).**
    1. Create a free widget at Cloudflare for your domain.
    2. Put the **secret key** in Parameter Store yourself, so it never lands in Terraform state:

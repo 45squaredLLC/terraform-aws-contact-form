@@ -45,12 +45,16 @@ resource "aws_iam_role_policy" "form" {
           Resource = "${aws_cloudwatch_log_group.form.arn}:*"
         },
         {
-          # Send only as the configured sender's domain or address.
+          # Send only as the configured sender's domain or address. When the
+          # account has a default configuration set, SES also authorizes every
+          # send against that set, so configuration sets are allowed too
+          # (without them the send fails with AccessDenied).
           Effect = "Allow"
           Action = ["ses:SendEmail"]
           Resource = [
             "${local.prefix}:ses:${local.region}:${local.account}:identity/${local.from_domain}",
             "${local.prefix}:ses:${local.region}:${local.account}:identity/${var.from_address}",
+            "${local.prefix}:ses:${local.region}:${local.account}:configuration-set/*",
           ]
         },
       ],

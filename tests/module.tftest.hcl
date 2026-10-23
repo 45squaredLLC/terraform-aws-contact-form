@@ -70,6 +70,11 @@ run "defaults" {
   }
 
   assert {
+    condition     = strcontains(aws_iam_role_policy.form.policy, "configuration-set/*")
+    error_message = "Sends must also be allowed through the account's default configuration set."
+  }
+
+  assert {
     condition     = aws_apigatewayv2_stage.form.default_route_settings[0].throttling_rate_limit == 1
     error_message = "The default rate limit should be 1 request per second."
   }
